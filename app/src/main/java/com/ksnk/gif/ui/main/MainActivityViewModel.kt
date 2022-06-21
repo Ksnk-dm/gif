@@ -29,8 +29,8 @@ class MainActivityViewModel(application: Application): AndroidViewModel(applicat
         return liveDataList
     }
 
-    fun retroFitResponse() {
-        val call: Call<GifsList> = apiInterface.getDataFromAPI("xkKpGU3MZrDUdlc8w5SVmxsqBns5n77a", "top")
+    fun retroFitResponse(query:String) {
+        val call: Call<GifsList> = apiInterface.getDataFromAPI("xkKpGU3MZrDUdlc8w5SVmxsqBns5n77a", query)
         call.enqueue(object : Callback<GifsList> {
             override fun onFailure(call: Call<GifsList>, t: Throwable) {
                 liveDataList.postValue(null)
