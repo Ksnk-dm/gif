@@ -6,8 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.ksnk.gif.Gif
-import com.ksnk.gif.data.converters.ImagesConverter
+import com.ksnk.gif.data.empty.Gif
 import com.ksnk.gif.data.dao.GifsDao
 
 @Database(
@@ -15,7 +14,7 @@ import com.ksnk.gif.data.dao.GifsDao
     exportSchema = false,
     entities = [(Gif::class)]
 )
-@TypeConverters(ImagesConverter::class)
+
 abstract class AppDataBase : RoomDatabase() {
     abstract fun getGifsDao(): GifsDao?
 

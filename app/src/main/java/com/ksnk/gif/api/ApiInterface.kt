@@ -1,5 +1,6 @@
-package com.ksnk.gif
+package com.ksnk.gif.api
 
+import com.ksnk.gif.models.GifsList
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

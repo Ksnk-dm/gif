@@ -3,28 +3,30 @@ package com.ksnk.gif.ui.main
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.ksnk.gif.ApiInterface
-import com.ksnk.gif.Gif
-import com.ksnk.gif.GifsList
+import com.ksnk.gif.api.ApiInterface
+import com.ksnk.gif.data.empty.Gif
+import com.ksnk.gif.models.GifsList
 import com.ksnk.gif.data.AppDataBase
 import com.ksnk.gif.data.repository.GifsRepository
 import com.ksnk.gif.di.App
-import com.ksnk.gif.di.modules.DataBaseModule
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import javax.inject.Inject
 
-class MainActivityViewModel(application: Application): AndroidViewModel(application) {
+class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
     @Inject
     lateinit var apiInterface: ApiInterface
 
+    @Inject
+    lateinit var dataBase: AppDataBase
 
+    @Inject
+    lateinit var repository: GifsRepository
     private lateinit var liveDataList: MutableLiveData<GifsList>
 
 
     init {
-        //here we need to init application.
         (application as App).getRetroComponent().inject(this)
         liveDataList = MutableLiveData()
     }
@@ -33,6 +35,7 @@ class MainActivityViewModel(application: Application): AndroidViewModel(applicat
     fun getLiveDataObserver(): MutableLiveData<GifsList> {
         return liveDataList
     }
+
 
     fun retroFitResponse(query: String) {
         val call: Call<GifsList> =
@@ -50,5 +53,21 @@ class MainActivityViewModel(application: Application): AndroidViewModel(applicat
                 }
             }
         })
+    }
+
+    fun insert(listGifs:List<Gif>) {
+        repository.insertList(listGifs)
+    }
+
+    fun getAll(): List<Gif>? {
+        return repository.getAll()
+    }
+
+    fun getId(id: String): Gif? {
+        return repository.getId(id)
+    }
+
+    fun update(gif: Gif){
+        repository.update(gif)
     }
 }

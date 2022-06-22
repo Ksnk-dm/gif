@@ -3,7 +3,6 @@ package com.ksnk.gif.ui.main.adapter
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
@@ -14,8 +13,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestOptions
-import com.ksnk.gif.Gif
+import com.ksnk.gif.GifViewActivity
+import com.ksnk.gif.data.empty.Gif
 import com.ksnk.gif.R
+import com.ksnk.gif.ui.main.MainActivityViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -25,17 +26,25 @@ import java.nio.ByteBuffer
 import java.util.*
 
 
-class MainRecyclerViewAdapter(context: Context) : RecyclerView.Adapter<MainViewHolder>() {
+class MainRecyclerViewAdapter(context: Context) :
+    RecyclerView.Adapter<MainViewHolder>() {
 
     private var listGifs: ArrayList<Gif>? = null
     private var context: Context? = null
+    private var listData: List<Gif>? = null
+    private var viewModel: MainActivityViewModel? = null
 
     fun setUpdatedGifs(listGifs: ArrayList<Gif>) {
         this.listGifs = listGifs
     }
 
+    fun setView(viewModel: MainActivityViewModel) {
+        this.viewModel = viewModel
+    }
+
     init {
         listGifs = ArrayList<Gif>()
+        listData = ArrayList<Gif>()
         this.context = context
     }
 
@@ -53,28 +62,47 @@ class MainRecyclerViewAdapter(context: Context) : RecyclerView.Adapter<MainViewH
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        Glide.with(holder.imageView)
-            .asGif()
-            .load(listGifs?.get(position)?.images?.original?.url)
-            .apply(RequestOptions.centerCropTransform())
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(holder.imageView)
+        val gif = viewModel?.getId(listGifs?.get(position)?.id.toString())
+        if (gif?.delStatus == false) {
+            Glide.with(holder.imageView)
+                .asGif()
+                .load(listGifs?.get(position)?.images?.original?.url)
+                .apply(RequestOptions.centerCropTransform())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(holder.imageView)
+            holder.textViewId.text = listGifs?.get(position)?.id.toString()
+            CoroutineScope(Dispatchers.IO).async {
+                saveImage(
+                    Glide.with(holder.imageView)
+                        .asGif()
+                        .load(listGifs?.get(position)?.images?.original?.url)
+                        .placeholder(android.R.drawable.progress_indeterminate_horizontal)
+                        .error(android.R.drawable.stat_notify_error)
+                        .submit()
+                        .get(), listGifs?.get(position)?.id.toString()
+                )
+
+            }
+        } else {
+            removeAt(position)
+        }
         holder.imageButtonDel.setOnClickListener {
             delFile(listGifs?.get(position)?.id.toString(), position)
         }
-        CoroutineScope(Dispatchers.IO).async {
-            saveImage(
-                Glide.with(holder.imageView)
-                    .asGif()
-                    .load(listGifs?.get(position)?.images?.original?.url)
-                    .placeholder(android.R.drawable.progress_indeterminate_horizontal)
-                    .error(android.R.drawable.stat_notify_error)
-                    .submit()
-                    .get(), listGifs?.get(position)?.id.toString()
-            )
 
+        holder.itemView.setOnClickListener {
+            val int: Intent = Intent(context, GifViewActivity::class.java)
+            int.putExtra("list", listGifs)
+            int.putExtra("position", position)
+            context?.startActivity(int)
         }
 
+
+    }
+
+
+    private fun removeAt(position: Int) {
+        listGifs?.removeAt(position)
     }
 
     private fun delFile(fileName: String, position: Int) {
@@ -85,7 +113,15 @@ class MainRecyclerViewAdapter(context: Context) : RecyclerView.Adapter<MainViewH
         val file = File("$storageDir/$fileName.gif")
         Log.d("dddd", file.absolutePath)
         file.delete()
+
+
+        val gif = listGifs!![position]
+        gif.delStatus = true
+        viewModel?.update(gif)
+
+
         listGifs?.remove(listGifs!![position])
+
         notifyDataSetChanged()
     }
 
@@ -133,15 +169,5 @@ class MainRecyclerViewAdapter(context: Context) : RecyclerView.Adapter<MainViewH
 
     override fun getItemCount(): Int {
         return listGifs?.size ?: 0
-    }
-
-    fun addData(listItems: ArrayList<Gif>) {
-        val size = this.listGifs?.size
-        this.listGifs?.addAll(listItems)
-        Log.d("dddd", listGifs?.size.toString())
-        val sizeNew = this.listGifs?.size
-        if (sizeNew != null) {
-            notifyItemRangeChanged(size!!, sizeNew)
-        }
     }
 }

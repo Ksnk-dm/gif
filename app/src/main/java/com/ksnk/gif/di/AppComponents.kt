@@ -1,9 +1,7 @@
 package com.ksnk.gif.di
 
-import android.app.Application
-import com.ksnk.gif.data.AppDataBase
-import com.ksnk.gif.data.dao.GifsDao
-import com.ksnk.gif.data.repository.GifsRepository
+
+import android.content.Context
 import com.ksnk.gif.di.modules.DataBaseModule
 import com.ksnk.gif.di.modules.RetroFitModule
 import com.ksnk.gif.ui.main.MainActivityViewModel
@@ -19,4 +17,6 @@ import javax.inject.Singleton
 
 interface AppComponent {
     fun inject(mainActivityViewModel: MainActivityViewModel)
+
+    fun database(context: Context)
 }
