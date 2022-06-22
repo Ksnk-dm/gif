@@ -3,8 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/ukrko/AndroidStudioProjects/gif/app/src/main/res/drawable/ic_baseline_delete_24.xml" value="0.1235" />
         <entry key="..\:/Users/ukrko/AndroidStudioProjects/gif/app/src/main/res/layout/activity_gif_view.xml" value="0.22282608695652173" />
         <entry key="..\:/Users/ukrko/AndroidStudioProjects/gif/app/src/main/res/layout/activity_main.xml" value="0.16197916666666667" />
+        <entry key="..\:/Users/ukrko/AndroidStudioProjects/gif/app/src/main/res/layout/grid_items.xml" value="0.2" />
         <entry key="..\:/Users/ukrko/AndroidStudioProjects/gif/app/src/main/res/layout/image_item.xml" value="0.22282608695652173" />
         <entry key="..\:/Users/ukrko/AndroidStudioProjects/gif/app/src/main/res/layout/item_progress.xml" value="0.12864583333333332" />
         <entry key="..\:/Users/ukrko/AndroidStudioProjects/gif/app/src/main/res/layout/list_items.xml" value="0.16197916666666667" />

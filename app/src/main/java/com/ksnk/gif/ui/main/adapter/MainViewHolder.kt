@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ksnk.gif.R
 
 class MainViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-    var imageView:ImageView = itemView.findViewById(R.id.imageView)
-    var imageButtonDel:ImageButton = itemView.findViewById(R.id.imageButtonDel)
+    var imageView:ImageView = itemView.findViewById(R.id.imageViewGif)
+    var imageButtonDel:ImageButton = itemView.findViewById(R.id.imageButtonDelete)
     var textViewId:TextView = itemView.findViewById(R.id.textViewId)
 }

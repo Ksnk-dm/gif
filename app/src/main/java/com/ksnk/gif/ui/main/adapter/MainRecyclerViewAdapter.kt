@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -13,9 +12,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestOptions
-import com.ksnk.gif.GifViewActivity
-import com.ksnk.gif.data.empty.Gif
+import com.ksnk.gif.enums.DisplayListType
+import com.ksnk.gif.ui.gifViewPager.GifViewActivity
 import com.ksnk.gif.R
+import com.ksnk.gif.data.empty.Gif
 import com.ksnk.gif.ui.main.MainActivityViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +23,6 @@ import kotlinx.coroutines.async
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
-import java.util.*
 
 
 class MainRecyclerViewAdapter(context: Context) :
@@ -33,14 +32,11 @@ class MainRecyclerViewAdapter(context: Context) :
     private var context: Context? = null
     private var listData: List<Gif>? = null
     private var viewModel: MainActivityViewModel? = null
+    private val mainViewHolder: MainViewHolder? = null
+    private var displayListType: DisplayListType? = null
+    private val grid = 0
+    private val list = 1
 
-    fun setUpdatedGifs(listGifs: ArrayList<Gif>) {
-        this.listGifs = listGifs
-    }
-
-    fun setView(viewModel: MainActivityViewModel) {
-        this.viewModel = viewModel
-    }
 
     init {
         listGifs = ArrayList<Gif>()
@@ -48,17 +44,48 @@ class MainRecyclerViewAdapter(context: Context) :
         this.context = context
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return if (displayListType === DisplayListType.Grid) grid else list
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val layoutInflater =
             parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        return MainViewHolder(
-            layoutInflater.inflate(
-                R.layout.list_items,
-                parent,
-                false
+        when (viewType) {
+            list -> {
+                return MainViewHolder(
+                    layoutInflater.inflate(
+                        R.layout.list_items,
+                        parent,
+                        false
+                    )
+                )
+            }
+            grid -> {
+                return MainViewHolder(
+                    layoutInflater.inflate(
+                        R.layout.grid_items,
+                        parent,
+                        false
+                    )
+                )
+            }
+        }
+        return mainViewHolder!!
+    }
+
+    private fun saveImageCoroutine(holder: MainViewHolder, position: Int) {
+        CoroutineScope(Dispatchers.IO).async {
+            saveImage(
+                Glide.with(holder.imageView)
+                    .asGif()
+                    .load(listGifs?.get(position)?.images?.original?.url)
+                    .placeholder(android.R.drawable.progress_indeterminate_horizontal)
+                    .error(android.R.drawable.stat_notify_error)
+                    .submit()
+                    .get(), listGifs?.get(position)?.id.toString()
             )
-        )
+        }
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
@@ -71,38 +98,29 @@ class MainRecyclerViewAdapter(context: Context) :
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.imageView)
             holder.textViewId.text = listGifs?.get(position)?.id.toString()
-            CoroutineScope(Dispatchers.IO).async {
-                saveImage(
-                    Glide.with(holder.imageView)
-                        .asGif()
-                        .load(listGifs?.get(position)?.images?.original?.url)
-                        .placeholder(android.R.drawable.progress_indeterminate_horizontal)
-                        .error(android.R.drawable.stat_notify_error)
-                        .submit()
-                        .get(), listGifs?.get(position)?.id.toString()
-                )
-
-            }
+            saveImageCoroutine(holder, position)
         } else {
-            removeAt(position)
+            CoroutineScope(Dispatchers.Main).async {
+                removeAt(position)
+                notifyDataSetChanged()
+            }
         }
         holder.imageButtonDel.setOnClickListener {
             delFile(listGifs?.get(position)?.id.toString(), position)
         }
 
         holder.itemView.setOnClickListener {
-            val int: Intent = Intent(context, GifViewActivity::class.java)
-            int.putExtra("list", listGifs)
-            int.putExtra("position", position)
-            context?.startActivity(int)
+            val intent: Intent = Intent(context, GifViewActivity::class.java)
+            intent.putExtra(context?.getString(R.string.intent_list), listGifs)
+            intent.putExtra(context?.getString(R.string.intent_position), position)
+            context?.startActivity(intent)
         }
-
-
     }
 
 
     private fun removeAt(position: Int) {
         listGifs?.removeAt(position)
+        setUpdatedGifs(listGifs!!)
     }
 
     private fun delFile(fileName: String, position: Int) {
@@ -111,17 +129,11 @@ class MainRecyclerViewAdapter(context: Context) :
                 .toString() + "/cacheGifs"
         )
         val file = File("$storageDir/$fileName.gif")
-        Log.d("dddd", file.absolutePath)
         file.delete()
-
-
         val gif = listGifs!![position]
         gif.delStatus = true
         viewModel?.update(gif)
-
-
         listGifs?.remove(listGifs!![position])
-
         notifyDataSetChanged()
     }
 
@@ -149,17 +161,14 @@ class MainRecyclerViewAdapter(context: Context) :
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
-            // Add the image to the system gallery
-            galleryAddPic(savedImagePath)
-            //Toast.makeText(this, "IMAGE SAVED", Toast.LENGTH_LONG).show() // to make this working, need to manage coroutine, as this execution is something off the main thread
+            galleryAddGif(savedImagePath)
         }
         return savedImagePath
     }
 
-    private fun galleryAddPic(imagePath: String?) {
+    private fun galleryAddGif(imagePath: String?) {
         imagePath?.let { path ->
-            val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+            val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_STARTED)
             val f = File(path)
             val contentUri: Uri = Uri.fromFile(f)
             mediaScanIntent.data = contentUri
@@ -170,4 +179,17 @@ class MainRecyclerViewAdapter(context: Context) :
     override fun getItemCount(): Int {
         return listGifs?.size ?: 0
     }
+
+    fun setUpdatedGifs(listGifs: ArrayList<Gif>) {
+        this.listGifs = listGifs
+    }
+
+    fun setView(viewModel: MainActivityViewModel) {
+        this.viewModel = viewModel
+    }
+
+    fun setDisplayListType(displayListType: DisplayListType) {
+        this.displayListType = displayListType
+    }
+
 }

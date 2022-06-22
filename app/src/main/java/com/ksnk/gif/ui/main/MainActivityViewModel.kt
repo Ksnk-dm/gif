@@ -15,6 +15,8 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
+    private var apiKey = "xkKpGU3MZrDUdlc8w5SVmxsqBns5n77a"
+
     @Inject
     lateinit var apiInterface: ApiInterface
 
@@ -37,9 +39,9 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     }
 
 
-    fun retroFitResponse(query: String) {
+    fun retroFitResponseSearch(query: String) {
         val call: Call<GifsList> =
-            apiInterface.getDataFromAPI("xkKpGU3MZrDUdlc8w5SVmxsqBns5n77a", query)
+            apiInterface.getDataSearchFromAPI(apiKey, query, 25)
         call.enqueue(object : Callback<GifsList> {
             override fun onFailure(call: Call<GifsList>, t: Throwable) {
                 liveDataList.postValue(null)
@@ -55,7 +57,25 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         })
     }
 
-    fun insert(listGifs:List<Gif>) {
+    fun retroFitResponseTrend() {
+        val call: Call<GifsList> =
+            apiInterface.getDataTrendFromAPI(apiKey, "g", 25)
+        call.enqueue(object : Callback<GifsList> {
+            override fun onFailure(call: Call<GifsList>, t: Throwable) {
+                liveDataList.postValue(null)
+            }
+
+            override fun onResponse(call: Call<GifsList>, response: Response<GifsList>) {
+                if (response.isSuccessful) {
+                    liveDataList.postValue(response.body())
+                } else {
+                    liveDataList.postValue(null)
+                }
+            }
+        })
+    }
+
+    fun insert(listGifs: List<Gif>) {
         repository.insertList(listGifs)
     }
 
@@ -67,7 +87,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         return repository.getId(id)
     }
 
-    fun update(gif: Gif){
+    fun update(gif: Gif) {
         repository.update(gif)
     }
 }

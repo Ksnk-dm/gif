@@ -8,8 +8,16 @@ import retrofit2.http.Query
 interface ApiInterface {
 
     @GET("gifs/search")
-    fun getDataFromAPI(
+    fun getDataSearchFromAPI(
         @Query("api_key") apiKey: String,
-        @Query("q") query: String
+        @Query("q") query: String,
+        @Query("limit") limit: Int
+    ): Call<GifsList>
+
+    @GET("gifs/trending")
+    fun getDataTrendFromAPI(
+        @Query("api_key") apiKey: String,
+        @Query("rating") rating: String,
+        @Query("limit") limit: Int
     ): Call<GifsList>
 }

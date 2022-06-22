@@ -1,9 +1,10 @@
-package com.ksnk.gif
+package com.ksnk.gif.ui.gifViewPager
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.viewpager2.widget.ViewPager2
+import com.ksnk.gif.ui.gifViewPager.adapter.ImageViewPagerAdapter
+import com.ksnk.gif.R
 import com.ksnk.gif.data.empty.Gif
 import java.util.ArrayList
 
@@ -13,12 +14,20 @@ class GifViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gif_view)
-        var list: ArrayList<Gif>? = intent.getSerializableExtra("list") as ArrayList<Gif>?
-        Log.d("dddd", list?.size.toString())
-        var pos: Int = intent.getIntExtra("position", 1)
+        init()
+        initViewPagerAndLoadExtras()
+    }
+
+    private fun init() {
         viewPager2 = findViewById(R.id.viewPager)
+    }
+
+    private fun initViewPagerAndLoadExtras() {
+        val list: ArrayList<Gif>? =
+            intent.getSerializableExtra(getString(R.string.intent_list)) as ArrayList<Gif>?
+        val position: Int = intent.getIntExtra(getString(R.string.intent_position), 1)
         imageViewPagerAdapter = ImageViewPagerAdapter(list, this)
         viewPager2.adapter = imageViewPagerAdapter
-        viewPager2.setCurrentItem(pos, false)
+        viewPager2.setCurrentItem(position, false)
     }
 }

@@ -1,12 +1,13 @@
-package com.ksnk.gif
+package com.ksnk.gif.ui.gifViewPager.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
+
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.ksnk.gif.R
 import com.ksnk.gif.data.empty.Gif
 import java.util.ArrayList
 
@@ -34,10 +35,5 @@ class ImageViewPagerAdapter(private val gifList: ArrayList<Gif>?, context: Conte
 
     override fun getItemCount(): Int {
         return gifList?.size ?: 0
-    }
-
-    fun setData(imageUrl: String) {
-
-
     }
 }
