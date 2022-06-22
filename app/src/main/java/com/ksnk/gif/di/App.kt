@@ -1,22 +1,23 @@
 package com.ksnk.gif.di
 
 import android.app.Application
+import com.ksnk.gif.di.modules.DataBaseModule
 import com.ksnk.gif.di.modules.RetroFitModule
-import javax.inject.Inject
 
-class App:Application() {
+class App : Application() {
 
-    private lateinit var retroComponent: AppComponent
+    private lateinit var appComponent: AppComponent
+
 
     override fun onCreate() {
         super.onCreate()
-
-        retroComponent = DaggerAppComponent.builder()
+        appComponent = DaggerAppComponent.builder()
             .retroFitModule(RetroFitModule())
+            .dataBaseModule(DataBaseModule(this))
             .build()
     }
 
     fun getRetroComponent(): AppComponent {
-        return retroComponent
+        return appComponent
     }
 }

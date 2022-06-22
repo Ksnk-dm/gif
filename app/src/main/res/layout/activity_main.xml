@@ -7,9 +7,43 @@
     android:orientation="vertical"
     tools:context=".ui.main.MainActivity">
 
-    <SearchView
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:textCursorDrawable="@null"
+        android:visibility="visible"
+        app:iconifiedByDefault="false"
+        app:queryBackground="@null"
+        app:queryHint="@string/search"
+        tools:visibility="visible">
+
+    </androidx.appcompat.widget.SearchView>
+
+    <RadioGroup
+        android:id="@+id/changeDisplayTypeRadioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:foregroundGravity="center"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioButtonList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/list" />
+
+        <RadioButton
+            android:id="@+id/radioButtonGrid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/grid" />
+    </RadioGroup>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mainRecyclerView"

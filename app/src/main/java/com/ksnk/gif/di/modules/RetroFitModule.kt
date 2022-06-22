@@ -1,6 +1,6 @@
 package com.ksnk.gif.di.modules
 
-import com.ksnk.gif.ApiInterface
+import com.ksnk.gif.api.ApiInterface
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
@@ -9,10 +9,13 @@ import javax.inject.Singleton
 
 @Module
 class RetroFitModule {
-    val baseURL = "https://api.giphy.com/v1/"
+
+    private val baseURL = "https://api.giphy.com/v1/"
+
+
     @Singleton
     @Provides
-    fun getRetroServiceInterface(retrofit: Retrofit):ApiInterface {
+    fun getRetroServiceInterface(retrofit: Retrofit): ApiInterface {
         return retrofit.create(ApiInterface::class.java)
     }
 
@@ -24,4 +27,5 @@ class RetroFitModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+
 }
