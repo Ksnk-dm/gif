@@ -1,6 +1,7 @@
 package com.ksnk.gif.di
 
 import android.app.Application
+import com.ksnk.gif.di.modules.DataBaseModule
 import com.ksnk.gif.di.modules.RetroFitModule
 import javax.inject.Inject
 
@@ -19,4 +20,5 @@ class App:Application() {
     fun getRetroComponent(): AppComponent {
         return retroComponent
     }
+
 }

@@ -9,10 +9,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.ksnk.gif.Gif
 import com.ksnk.gif.GifsList
 import com.ksnk.gif.R
 import com.ksnk.gif.ui.main.adapter.MainRecyclerViewAdapter
+import java.io.File
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mAdapter: MainRecyclerViewAdapter
@@ -42,38 +45,15 @@ class MainActivity : AppCompatActivity() {
 
         initRecyclerView()
       //  initViewModel("test")
-        mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 0) {
-                    Log.e("test","reached the last element of recyclerview");
-                  var  visibleItemCount = mGridLayoutManager.getChildCount();
-                   var totalItemCount = mGridLayoutManager.getItemCount();
-                   var pastVisiblesItems = mGridLayoutManager.findFirstVisibleItemPosition()
-
-                    if (isLoading) {
-
-                        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
-
-                            isLoading = false;
-                            Log.d("dddd", "load $totalItemCount")
-if(totalItemCount==limit){
-    limit += 2
-    isLoading=true
-}
-                            search(searchView.query.toString(), limit)
-
-                        }
-                    }
-                }
-            }})
 
         searchView = findViewById(R.id.search_view)
         performSearch()
-    }
+        Thread(Runnable{
+            cash()
+        })
 
-    private fun method() {
-        loadmore = true
-        Log.d("lllll", "load")
+        .start()
+
     }
 
     fun getMoreItems() {
@@ -104,7 +84,7 @@ if(totalItemCount==limit){
         mGridLayoutManager = GridLayoutManager(this, 1)
 
         mRecyclerView.layoutManager = mGridLayoutManager
-        mAdapter = MainRecyclerViewAdapter()
+        mAdapter = MainRecyclerViewAdapter(this)
         mRecyclerView.adapter = mAdapter
     }
 
@@ -142,13 +122,20 @@ if(totalItemCount==limit){
         })
     }
 
+
+    private fun cash(){
+//        val file: File = Glide.with(this).asFile().load("https://klike.net/uploads/posts/2020-04/1587719791_1.jpg").submit().get()
+     //   val path = file.path
+    //    Log.d("dddd", path)
+        File("/data/user/0/com.ksnk.gif/cache/image_manager_disk_cache/").walkTopDown().forEach { println(it) }
+    }
     private fun search(text: String?, limit:Int) {
         mActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
         mActivityViewModel.getLiveDataObserver().observe(this,
             Observer<GifsList> { t ->
                 if (t != null) {
                     mAdapter.setUpdatedGifs(t.data as ArrayList<Gif>)
-                    mAdapter.notifyItemChanged(t.data.size)
+                    mAdapter.notifyDataSetChanged()
                 } else {
                     Toast.makeText(
                         this@MainActivity,
@@ -159,6 +146,6 @@ if(totalItemCount==limit){
                 }
             })
 
-        mActivityViewModel.retroFitResponse(text.toString(), limit)
+        mActivityViewModel.retroFitResponse(text.toString())
     }
 }

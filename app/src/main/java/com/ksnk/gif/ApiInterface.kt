@@ -9,7 +9,6 @@ interface ApiInterface {
     @GET("gifs/search")
     fun getDataFromAPI(
         @Query("api_key") apiKey: String,
-        @Query("q") query: String,
-        @Query("limit") limit: Int
+        @Query("q") query: String
     ): Call<GifsList>
 }

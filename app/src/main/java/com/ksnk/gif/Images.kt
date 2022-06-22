@@ -8,4 +8,7 @@ data class Images(
     @Expose
     var original: Original
 ) {
+    override fun toString(): String {
+        return "Images(original=$original)"
+    }
 }

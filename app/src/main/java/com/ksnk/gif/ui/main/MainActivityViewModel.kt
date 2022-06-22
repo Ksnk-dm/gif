@@ -4,8 +4,12 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.ksnk.gif.ApiInterface
+import com.ksnk.gif.Gif
 import com.ksnk.gif.GifsList
+import com.ksnk.gif.data.AppDataBase
+import com.ksnk.gif.data.repository.GifsRepository
 import com.ksnk.gif.di.App
+import com.ksnk.gif.di.modules.DataBaseModule
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -14,6 +18,7 @@ import javax.inject.Inject
 class MainActivityViewModel(application: Application): AndroidViewModel(application) {
     @Inject
     lateinit var apiInterface: ApiInterface
+
 
     private lateinit var liveDataList: MutableLiveData<GifsList>
 
@@ -29,15 +34,16 @@ class MainActivityViewModel(application: Application): AndroidViewModel(applicat
         return liveDataList
     }
 
-    fun retroFitResponse(query:String, limit:Int) {
-        val call: Call<GifsList> = apiInterface.getDataFromAPI("xkKpGU3MZrDUdlc8w5SVmxsqBns5n77a", query, limit)
+    fun retroFitResponse(query: String) {
+        val call: Call<GifsList> =
+            apiInterface.getDataFromAPI("xkKpGU3MZrDUdlc8w5SVmxsqBns5n77a", query)
         call.enqueue(object : Callback<GifsList> {
             override fun onFailure(call: Call<GifsList>, t: Throwable) {
                 liveDataList.postValue(null)
             }
 
             override fun onResponse(call: Call<GifsList>, response: Response<GifsList>) {
-                if(response.isSuccessful) {
+                if (response.isSuccessful) {
                     liveDataList.postValue(response.body())
                 } else {
                     liveDataList.postValue(null)
