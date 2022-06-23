@@ -17,7 +17,7 @@ class App : Application() {
             .build()
     }
 
-    fun getRetroComponent(): AppComponent {
+    fun getAppComponent(): AppComponent {
         return appComponent
     }
 }

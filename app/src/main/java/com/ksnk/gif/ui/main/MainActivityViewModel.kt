@@ -29,7 +29,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
 
     init {
-        (application as App).getRetroComponent().inject(this)
+        (application as App).getAppComponent().inject(this)
         liveDataList = MutableLiveData()
     }
 
