@@ -91,12 +91,13 @@ class MainRecyclerViewAdapter(context: Context) :
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val gif = viewModel?.getId(listGifs?.get(position)?.id.toString())
         if (gif?.delStatus == false) {
+            CoroutineScope(Dispatchers.Main).async {
             Glide.with(holder.imageView)
                 .asGif()
                 .load(listGifs?.get(position)?.images?.original?.url)
                 .apply(RequestOptions.centerCropTransform())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(holder.imageView)
+                .into(holder.imageView)}
             holder.textViewId.text = listGifs?.get(position)?.id.toString()
             saveImageCoroutine(holder, position)
         } else {

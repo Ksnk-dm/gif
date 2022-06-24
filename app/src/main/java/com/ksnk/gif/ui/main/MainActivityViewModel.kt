@@ -25,7 +25,8 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
     @Inject
     lateinit var repository: GifsRepository
-    private lateinit var liveDataList: MutableLiveData<GifsList>
+
+    private var liveDataList: MutableLiveData<GifsList>
 
 
     init {
