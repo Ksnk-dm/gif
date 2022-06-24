@@ -19,12 +19,12 @@ import com.ksnk.gif.ui.main.adapter.MainRecyclerViewAdapter
 
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var mAdapter: MainRecyclerViewAdapter
-    private lateinit var mActivityViewModel: MainActivityViewModel
-    private lateinit var mRecyclerView: RecyclerView
-    private lateinit var mGridLayoutManager: GridLayoutManager
-    private lateinit var searchView: SearchView
-    private lateinit var changeDisplayTypeRadioGroup:RadioGroup
+    private var mAdapter: MainRecyclerViewAdapter?=null
+    private var mActivityViewModel: MainActivityViewModel?=null
+    private var mRecyclerView: RecyclerView?=null
+    private var mGridLayoutManager: GridLayoutManager?=null
+    private var searchView: SearchView?=null
+    private var changeDisplayTypeRadioGroup:RadioGroup?=null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         mRecyclerView = findViewById(R.id.mainRecyclerView)
         searchView = findViewById(R.id.search_view)
         changeDisplayTypeRadioGroup = findViewById(R.id.changeDisplayTypeRadioGroup)
-        changeDisplayTypeRadioGroup.setOnCheckedChangeListener{ _, i ->
+        changeDisplayTypeRadioGroup?.setOnCheckedChangeListener{ _, i ->
             when (i) {
                 R.id.radioButtonList -> {
                     onChangeTypeDisplay(DisplayListType.List)
@@ -53,13 +53,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun initRecyclerView() {
         mGridLayoutManager = GridLayoutManager(this, 1)
-        mRecyclerView.layoutManager = mGridLayoutManager
+        mRecyclerView?.layoutManager = mGridLayoutManager
         mAdapter = MainRecyclerViewAdapter(this)
-        mRecyclerView.adapter = mAdapter
+        mRecyclerView?.adapter = mAdapter
     }
 
     private fun performSearch() {
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 search(query)
                 return true
@@ -76,14 +76,14 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     private fun search(text: String?) {
         mActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
-        mAdapter.setView(mActivityViewModel)
-        mActivityViewModel.getLiveDataObserver().observe(this,
+        mAdapter?.setView(mActivityViewModel!!)
+        mActivityViewModel?.getLiveDataObserver()?.observe(this,
             Observer<GifsList> { t ->
                 if (t != null) {
-                    mAdapter.setUpdatedGifs(t.data as ArrayList<Gif>)
-                    mAdapter.notifyDataSetChanged()
+                    mAdapter?.setUpdatedGifs(t.data as ArrayList<Gif>)
+                    mAdapter?.notifyDataSetChanged()
                     try {
-                        mActivityViewModel.insert(t.data)
+                        mActivityViewModel?.insert(t.data)
                     } catch (e: SQLiteConstraintException) {
                         e.stackTrace
 
@@ -98,20 +98,20 @@ class MainActivity : AppCompatActivity() {
                 }
             })
 
-        mActivityViewModel.retroFitResponseSearch(text.toString())
+        mActivityViewModel?.retroFitResponseSearch(text.toString())
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun loadTrend() {
         mActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
-        mAdapter.setView(mActivityViewModel)
-        mActivityViewModel.getLiveDataObserver().observe(this,
+        mAdapter?.setView(mActivityViewModel!!)
+        mActivityViewModel?.getLiveDataObserver()?.observe(this,
             Observer<GifsList> { t ->
                 if (t != null) {
-                    mAdapter.setUpdatedGifs(t.data as ArrayList<Gif>)
-                    mAdapter.notifyDataSetChanged()
+                    mAdapter?.setUpdatedGifs(t.data as ArrayList<Gif>)
+                    mAdapter?.notifyDataSetChanged()
                     try {
-                        mActivityViewModel.insert(t.data)
+                        mActivityViewModel?.insert(t.data)
                     } catch (e: SQLiteConstraintException) {
                         e.stackTrace
 
@@ -126,13 +126,13 @@ class MainActivity : AppCompatActivity() {
                 }
             })
 
-        mActivityViewModel.retroFitResponseTrend()
+        mActivityViewModel?.retroFitResponseTrend()
     }
 
     private fun onChangeTypeDisplay(displayListType: DisplayListType) {
-        mGridLayoutManager.spanCount = if (displayListType === DisplayListType.Grid) 3 else 1
-        mAdapter.setDisplayListType(displayListType)
-        mRecyclerView.layoutManager = mGridLayoutManager
-        mAdapter.notifyItemRangeChanged(0, mAdapter.itemCount)
+        mGridLayoutManager?.spanCount = if (displayListType === DisplayListType.Grid) 3 else 1
+        mAdapter?.setDisplayListType(displayListType)
+        mRecyclerView?.layoutManager = mGridLayoutManager
+        mAdapter?.notifyItemRangeChanged(0, mAdapter!!.itemCount)
     }
 }
