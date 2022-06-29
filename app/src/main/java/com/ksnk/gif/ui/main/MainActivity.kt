@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                     mAdapter?.setUpdatedGifs(t.data as ArrayList<Gif>)
                     mAdapter?.notifyDataSetChanged()
                     try {
-                        mActivityViewModel?.insert(t.data)
+                     //   mActivityViewModel?.insert(t.data)
                     } catch (e: SQLiteConstraintException) {
                         e.stackTrace
 
@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
                     mAdapter?.setUpdatedGifs(t.data as ArrayList<Gif>)
                     mAdapter?.notifyDataSetChanged()
                     try {
-                        mActivityViewModel?.insert(t.data)
+                     //   mActivityViewModel?.insert(t.data)
                     } catch (e: SQLiteConstraintException) {
                         e.stackTrace
 

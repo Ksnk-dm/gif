@@ -42,7 +42,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
     fun retroFitResponseSearch(query: String) {
         val call: Call<GifsList> =
-            apiInterface.getDataSearchFromAPI(apiKey, query, 25)
+            apiInterface.getDataSearchFromAPI(apiKey, query)
         call.enqueue(object : Callback<GifsList> {
             override fun onFailure(call: Call<GifsList>, t: Throwable) {
                 liveDataList.postValue(null)
@@ -60,7 +60,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
     fun retroFitResponseTrend() {
         val call: Call<GifsList> =
-            apiInterface.getDataTrendFromAPI(apiKey, "g", 25)
+            apiInterface.getDataTrendFromAPI(apiKey, "g")
         call.enqueue(object : Callback<GifsList> {
             override fun onFailure(call: Call<GifsList>, t: Throwable) {
                 liveDataList.postValue(null)

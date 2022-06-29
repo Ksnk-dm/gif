@@ -10,14 +10,12 @@ interface ApiInterface {
     @GET("gifs/search")
     fun getDataSearchFromAPI(
         @Query("api_key") apiKey: String,
-        @Query("q") query: String,
-        @Query("limit") limit: Int
+        @Query("q") query: String
     ): Call<GifsList>
 
     @GET("gifs/trending")
     fun getDataTrendFromAPI(
         @Query("api_key") apiKey: String,
-        @Query("rating") rating: String,
-        @Query("limit") limit: Int
+        @Query("rating") rating: String
     ): Call<GifsList>
 }
